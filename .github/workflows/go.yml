@@ -13,7 +13,7 @@ jobs:
           - "1.21.0-rc.3"
         os: # https://github.com/actions/virtual-environments
           - "macos-13"
-        runs-on: ${{ matrix.os }} 
+        runs-on: ${{ macos-13 }} 
     name: ${{ matrix.os }} / Go ${{ matrix.go }}
 
     steps:
