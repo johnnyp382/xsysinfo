@@ -1,0 +1,43 @@
+
+name: Build iOS Tweak with Theos
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        go:
+          - "1.21.0-rc.3"        
+        os: [macos-latest]        
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Check cache
+        run: |
+          echo upstream_heads=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/theos/sdks | head -n 1 | cut -f 1` >> $GITHUB_ENV
+      - name: Use cache
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/theos
+          key: ${{ runner.os }}-${{ env.upstream_heads }}
+
+      - name: Prepare Theos
+        uses: Randomblock1/theos-action@v1
+
+ 
+      - name: Build package (rootless)
+        run: |
+          rm -f packages/*
+          make package FINALPACKAGE=1 SYSROOT=$THEOS/sdks/iPhoneOS16.5.sdk THEOS_PACKAGE_SCHEME=rootless
+
+      - name: Upload package
+        uses: actions/upload-artifact@v3
+        with:
+          name: "sysctl builds (${{ matrix.os }})"
+          path: ${{ github.workspace }}/packages/*.deb
