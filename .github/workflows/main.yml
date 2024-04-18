@@ -11,12 +11,16 @@ jobs:
         go:
           - "1.21.0-rc.3"        
         os: [macos-latest]        
-
+    name: ${{ matrix.os }} / Go ${{ matrix.go }}
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: true
-
+      - uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go }}
+          cache: true
+      - run: go test -v          
       - name: Check cache
         run: |
           echo upstream_heads=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/theos/sdks | head -n 1 | cut -f 1` >> $GITHUB_ENV
