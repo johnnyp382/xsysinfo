@@ -24,4 +24,4 @@ jobs:
       with:  
         name: xsysinfo
         with: ./...
-    
+        path: /Users/runner/work/xsysinfo/xsysinfo
